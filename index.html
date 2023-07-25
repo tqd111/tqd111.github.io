@@ -1,10 +1,92 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title></title>
-	</head>
-	<body>
-		<div style="color: red; text-align: center; font-size: 300px;">你真棒！</div>
-	</body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>打地鼠游戏</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    .hole {
+      width: 100px;
+      height: 100px;
+      background-color: #6b6b6b;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      font-size: 24px;
+      color: white;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="score">得分: 0</div>
+  <div id="time">时间: 30</div>
+  <div id="game-container"></div>
+
+  <script>
+    const gameContainer = document.getElementById('game-container');
+    const scoreDisplay = document.getElementById('score');
+    const timeDisplay = document.getElementById('time');
+    const holeCount = 9;
+    const gameTime = 30;
+    let score = 0;
+    let time = gameTime;
+
+    function getRandomHole() {
+      return Math.floor(Math.random() * holeCount) + 1;
+    }
+
+    function createHole() {
+      const hole = document.createElement('div');
+      hole.classList.add('hole');
+      hole.textContent = '🐭';
+      gameContainer.appendChild(hole);
+
+      hole.addEventListener('click', () => {
+        if (hole.classList.contains('show')) {
+          score++;
+          hole.classList.remove('show');
+          scoreDisplay.textContent = `得分: ${score}`;
+        }
+      });
+
+      setTimeout(() => {
+        hole.remove();
+        if (time > 0) {
+          createHole();
+        }
+      }, Math.random() * 1000 + 500); // 随机生成显示时间
+    }
+
+    function startGame() {
+      score = 0;
+      time = gameTime;
+      scoreDisplay.textContent = `得分: ${score}`;
+      timeDisplay.textContent = `时间: ${time}`;
+      createHole();
+
+      const timer = setInterval(() => {
+        time--;
+        timeDisplay.textContent = `时间: ${time}`;
+        if (time <= 0) {
+          clearInterval(timer);
+          alert('游戏结束！你的得分是: ' + score);
+        }
+      }, 1000);
+    }
+
+    startGame();
+  </script>
+</body>
 </html>
