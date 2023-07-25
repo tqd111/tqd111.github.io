@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>水果忍者游戏</title>
+  <title>跳一跳游戏</title>
   <style>
     body {
       margin: 0;
@@ -11,105 +11,15 @@
       background-color: #f0f0f0;
     }
     #game-container {
-      position: relative;
       width: 100%;
       height: 100vh;
-      touch-action: none; /* 禁止默认的触摸事件 */
-    }
-    .fruit {
-      position: absolute;
-      width: 60px;
-      height: 60px;
-      background-size: cover;
-    }
-    .bomb {
-      position: absolute;
-      width: 60px;
-      height: 60px;
-      background-color: red;
-      border-radius: 50%;
     }
   </style>
 </head>
 <body>
-  <div id="score">得分: 0</div>
   <div id="game-container"></div>
 
-  <script>
-    const gameContainer = document.getElementById('game-container');
-    const scoreDisplay = document.getElementById('score'); // Define the scoreDisplay variable
-    let score = 0;
-
-    function createFruit() {
-      const fruits = ['apple', 'banana', 'orange'];
-      const fruitType = fruits[Math.floor(Math.random() * fruits.length)];
-      const fruit = document.createElement('div');
-      fruit.classList.add('fruit');
-      fruit.style.backgroundImage = `url('path/to/${fruitType}.png')`;
-      fruit.style.left = Math.random() * (window.innerWidth - 60) + 'px';
-      fruit.style.top = window.innerHeight + 'px';
-      gameContainer.appendChild(fruit);
-
-      fruit.addEventListener('touchstart', () => {
-        score++;
-        fruit.remove();
-        updateScore();
-      });
-
-      const fallInterval = setInterval(() => {
-        const currentTop = parseFloat(fruit.style.top);
-        if (currentTop >= window.innerHeight - 60) {
-          fruit.remove();
-          clearInterval(fallInterval);
-          updateScore();
-        } else {
-          fruit.style.top = currentTop + 5 + 'px';
-        }
-      }, 16);
-    }
-
-    function createBomb() {
-      const bomb = document.createElement('div');
-      bomb.classList.add('bomb');
-      bomb.style.left = Math.random() * (window.innerWidth - 60) + 'px';
-      bomb.style.top = window.innerHeight + 'px';
-      gameContainer.appendChild(bomb);
-
-      bomb.addEventListener('touchstart', () => {
-        score -= 5;
-        bomb.remove();
-        updateScore();
-      });
-
-      const fallInterval = setInterval(() => {
-        const currentTop = parseFloat(bomb.style.top);
-        if (currentTop >= window.innerHeight - 60) {
-          bomb.remove();
-          clearInterval(fallInterval);
-          updateScore();
-        } else {
-          bomb.style.top = currentTop + 5 + 'px';
-        }
-      }, 16);
-    }
-
-    function updateScore() {
-      scoreDisplay.textContent = `得分: ${score}`;
-    }
-
-    function startGame() {
-      score = 0;
-      updateScore();
-
-      const gameInterval = setInterval(() => {
-        createFruit();
-        if (Math.random() < 0.2) {
-          createBomb();
-        }
-      }, 1000);
-    }
-
-    startGame();
-  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
+  <script src="game.js"></script>
 </body>
 </html>
