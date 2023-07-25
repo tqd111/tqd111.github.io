@@ -32,10 +32,12 @@
   </style>
 </head>
 <body>
+  <div id="score">得分: 0</div>
   <div id="game-container"></div>
 
   <script>
     const gameContainer = document.getElementById('game-container');
+    const scoreDisplay = document.getElementById('score'); // Define the scoreDisplay variable
     let score = 0;
 
     function createFruit() {
