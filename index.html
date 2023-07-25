@@ -3,85 +3,106 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>打地鼠游戏</title>
+  <title>水果忍者游戏</title>
   <style>
     body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
+      overflow: hidden;
       background-color: #f0f0f0;
     }
-    .hole {
-      width: 100px;
-      height: 100px;
-      background-color: #6b6b6b;
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      touch-action: none; /* 禁止默认的触摸事件 */
+    }
+    .fruit {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background-size: cover;
+    }
+    .bomb {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background-color: red;
       border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      user-select: none;
-      font-size: 24px;
-      color: white;
-      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <div id="score">得分: 0</div>
-  <div id="time">时间: 30</div>
   <div id="game-container"></div>
 
   <script>
     const gameContainer = document.getElementById('game-container');
-    const scoreDisplay = document.getElementById('score');
-    const timeDisplay = document.getElementById('time');
-    const holeCount = 9;
-    const gameTime = 30;
     let score = 0;
-    let time = gameTime;
 
-    function getRandomHole() {
-      return Math.floor(Math.random() * holeCount) + 1;
-    }
+    function createFruit() {
+      const fruits = ['apple', 'banana', 'orange'];
+      const fruitType = fruits[Math.floor(Math.random() * fruits.length)];
+      const fruit = document.createElement('div');
+      fruit.classList.add('fruit');
+      fruit.style.backgroundImage = `url('path/to/${fruitType}.png')`;
+      fruit.style.left = Math.random() * (window.innerWidth - 60) + 'px';
+      fruit.style.top = window.innerHeight + 'px';
+      gameContainer.appendChild(fruit);
 
-    function createHole() {
-      const hole = document.createElement('div');
-      hole.classList.add('hole');
-      hole.textContent = '🐭';
-      gameContainer.appendChild(hole);
-
-      hole.addEventListener('click', () => {
-        if (hole.classList.contains('show')) {
-          score++;
-          hole.classList.remove('show');
-          scoreDisplay.textContent = `得分: ${score}`;
-        }
+      fruit.addEventListener('touchstart', () => {
+        score++;
+        fruit.remove();
+        updateScore();
       });
 
-      setTimeout(() => {
-        hole.remove();
-        if (time > 0) {
-          createHole();
+      const fallInterval = setInterval(() => {
+        const currentTop = parseFloat(fruit.style.top);
+        if (currentTop >= window.innerHeight - 60) {
+          fruit.remove();
+          clearInterval(fallInterval);
+          updateScore();
+        } else {
+          fruit.style.top = currentTop + 5 + 'px';
         }
-      }, Math.random() * 1000 + 500); // 随机生成显示时间
+      }, 16);
+    }
+
+    function createBomb() {
+      const bomb = document.createElement('div');
+      bomb.classList.add('bomb');
+      bomb.style.left = Math.random() * (window.innerWidth - 60) + 'px';
+      bomb.style.top = window.innerHeight + 'px';
+      gameContainer.appendChild(bomb);
+
+      bomb.addEventListener('touchstart', () => {
+        score -= 5;
+        bomb.remove();
+        updateScore();
+      });
+
+      const fallInterval = setInterval(() => {
+        const currentTop = parseFloat(bomb.style.top);
+        if (currentTop >= window.innerHeight - 60) {
+          bomb.remove();
+          clearInterval(fallInterval);
+          updateScore();
+        } else {
+          bomb.style.top = currentTop + 5 + 'px';
+        }
+      }, 16);
+    }
+
+    function updateScore() {
+      scoreDisplay.textContent = `得分: ${score}`;
     }
 
     function startGame() {
       score = 0;
-      time = gameTime;
-      scoreDisplay.textContent = `得分: ${score}`;
-      timeDisplay.textContent = `时间: ${time}`;
-      createHole();
+      updateScore();
 
-      const timer = setInterval(() => {
-        time--;
-        timeDisplay.textContent = `时间: ${time}`;
-        if (time <= 0) {
-          clearInterval(timer);
-          alert('游戏结束！你的得分是: ' + score);
+      const gameInterval = setInterval(() => {
+        createFruit();
+        if (Math.random() < 0.2) {
+          createBomb();
         }
       }, 1000);
     }
